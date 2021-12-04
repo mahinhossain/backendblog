@@ -33,7 +33,7 @@ router.get("/:id", async (req, res) => {
 // post
 router.post("/", async (req, res) => {
   try {
-    const newPost = new Post(req.body);
+    const newPost = await new Post(req.body);
 
     const post = await newPost.save();
 
@@ -69,23 +69,29 @@ router.put("/:id", async (req, res) => {
   }
 });
 router.delete("/:id", async (req, res) => {
-  try {
-    const post = await Post.findById(req.params.id);
+  const post = await Post.findByIdAndDelete(req.params.id);
 
-    if (post.username === req.body.username) {
-      try {
-        await post.delete();
-
-        res.json("Delete Successfull");
-      } catch (error) {
-        res.status(404).json("Not Deleted");
-      }
-    } else {
-      res.status(404).json("Error");
-    }
-  } catch {
-    console.log(`error`);
+  if (post) {
+    res.json("Delete Successfull");
+  } else {
+    res.status(404).json("Error");
   }
+  // try {
+
+  //   if (post.username == req.body.username) {
+  //     try {
+  //       await post.delete();
+
+  //       res.json("Delete Successfull");
+  //     } catch (error) {
+  //       res.status(404).json("Not Deleted");
+  //     }
+  //   } else {
+  //     res.status(404).json("Error");
+  //   }
+  // } catch {
+  //   console.log(`error`);
+  // }
 });
 
 module.exports = router;
